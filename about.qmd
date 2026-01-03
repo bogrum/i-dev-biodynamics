@@ -1,0 +1,47 @@
+---
+title: "About Me"
+image: profile.png
+about:
+  template: trestles
+  links:
+    - icon: bluesky
+      text: Bluesky
+      href: https://bsky.app/profile/i-dev-dynamics.bsky.social
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/in/emrecev/
+    - icon: github
+      text: Github
+      href: https://github.com/bogrum
+    - icon: envelope
+      text: Email
+      href: mailto:e.cevik2000@proton.me
+---
+
+## Bio
+
+I am a dedicated researcher and **Bioinformatics Master's student** at Gebze Technical University, with a strong background in **Bioengineering**. My work focuses on the intersection of biological systems and computational tools, particularly in **structural bioinformatics**, **molecular simulations**, and **protein-ligand interactions**.
+
+Currently, I serve as the **President for ISCB-SC RSG-Turkey**, where I contribute to the growth and organization of the computational biology community in Turkey.
+
+## Education
+
+* **M.Sc. in Bioinformatics and Systems Biology** | Gebze Technical University | 2025 – Present
+* **B.Sc. in Bioengineering** | Gebze Technical University | 2019 – 2025
+
+## Research & Projects
+
+I have actively contributed to several national research initiatives supported by **TÜBİTAK**:
+
+* **TÜBİTAK 2209-A:** Developing a web-based tool for screening small binding pockets in protein ensembles and conducting ensemble docking simulations.
+* **TÜBİTAK 3501:** Investigating H2 production mechanisms of water reduction catalysts using Ab-Initio Molecular Dynamics (AIMD), Density Functional Theory (DFT), and Free Energy Perturbation theory.
+* **Bioinformatics Tool Development:** Experienced in scraping database data to generate paired protein-ligand lists and developing front-end components for bioinformatics applications.
+
+## Technical Skills
+
+* **Simulations & Modeling:** GROMACS, AutoDock Vina, Smina, PyMOL, VMD.
+* **Programming:** Python (Intermediate), Bash/Shell scripting, and Web Development (HTML/CSS/JS).
+* **Dry Lab:** RASPA Molecular Simulations, Monte Carlo simulations, and Molecular Docking.
+* **Other Tools:** CAD Software (SolidWorks, AutoCAD, Fusion360), Adobe Photoshop, and Linux System Administration.
+
+Beyond the laboratory, I am an enthusiast of the "Maker" culture. I have previously served as an instructor for middle school students, teaching CAD sketching and 3D modeling for DIY projects.

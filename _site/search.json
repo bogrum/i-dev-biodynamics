@@ -1,0 +1,114 @@
+[
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About Me",
+    "section": "",
+    "text": "I am a dedicated researcher and Bioinformatics Master’s student at Gebze Technical University, with a strong background in Bioengineering. My work focuses on the intersection of biological systems and computational tools, particularly in structural bioinformatics, molecular simulations, and protein-ligand interactions.\nCurrently, I serve as the President for ISCB-SC RSG-Turkey, where I contribute to the growth and organization of the computational biology community in Turkey."
+  },
+  {
+    "objectID": "about.html#bio",
+    "href": "about.html#bio",
+    "title": "About Me",
+    "section": "",
+    "text": "I am a dedicated researcher and Bioinformatics Master’s student at Gebze Technical University, with a strong background in Bioengineering. My work focuses on the intersection of biological systems and computational tools, particularly in structural bioinformatics, molecular simulations, and protein-ligand interactions.\nCurrently, I serve as the President for ISCB-SC RSG-Turkey, where I contribute to the growth and organization of the computational biology community in Turkey."
+  },
+  {
+    "objectID": "about.html#education",
+    "href": "about.html#education",
+    "title": "About Me",
+    "section": "2 Education",
+    "text": "2 Education\n\nM.Sc. in Bioinformatics and Systems Biology | Gebze Technical University | 2025 – Present\nB.Sc. in Bioengineering | Gebze Technical University | 2019 – 2025"
+  },
+  {
+    "objectID": "about.html#research-projects",
+    "href": "about.html#research-projects",
+    "title": "About Me",
+    "section": "3 Research & Projects",
+    "text": "3 Research & Projects\nI have actively contributed to several national research initiatives supported by TÜBİTAK:\n\nTÜBİTAK 2209-A: Developing a web-based tool for screening small binding pockets in protein ensembles and conducting ensemble docking simulations.\nTÜBİTAK 3501: Investigating H2 production mechanisms of water reduction catalysts using Ab-Initio Molecular Dynamics (AIMD), Density Functional Theory (DFT), and Free Energy Perturbation theory.\nBioinformatics Tool Development: Experienced in scraping database data to generate paired protein-ligand lists and developing front-end components for bioinformatics applications."
+  },
+  {
+    "objectID": "about.html#technical-skills",
+    "href": "about.html#technical-skills",
+    "title": "About Me",
+    "section": "4 Technical Skills",
+    "text": "4 Technical Skills\n\nSimulations & Modeling: GROMACS, AutoDock Vina, Smina, PyMOL, VMD.\nProgramming: Python (Intermediate), Bash/Shell scripting, and Web Development (HTML/CSS/JS).\nDry Lab: RASPA Molecular Simulations, Monte Carlo simulations, and Molecular Docking.\nOther Tools: CAD Software (SolidWorks, AutoCAD, Fusion360), Adobe Photoshop, and Linux System Administration.\n\nBeyond the laboratory, I am an enthusiast of the “Maker” culture. I have previously served as an instructor for middle school students, teaching CAD sketching and 3D modeling for DIY projects."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "i-dev-biodynamics // Emre’s blog.",
+    "section": "",
+    "text": "Usage of TRUBA with Gromacs\n\n\n\nMolecular Dynamics Simulations\n\nTRUBA\n\n\n\n\n\n\n\n\n\nJan 4, 2026\n\n\nEmre Taha Çevik\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/truba_gromacs/index.html",
+    "href": "posts/truba_gromacs/index.html",
+    "title": "Usage of TRUBA with Gromacs",
+    "section": "",
+    "text": "This tutorial covers installing and running GROMACS with GPU acceleration on TRUBA’s HPC cluster.\n\n\n\nActive TRUBA account with allocation\nBasic Linux/bash familiarity\nSSH access to TRUBA\n\n\n\n\n\n\nTRUBA provides the necessary software as modules:\nmodule load comp/gcc/12.3.0\nmodule load lib/cuda/12.6\nmodule load comp/cmake/3.31.1\nDownload and Extract GROMACS\nwget https://ftp.gromacs.org/gromacs/gromacs-2025.4.tar.gz\nNow, let’s install\ntar xfz gromacs-2025.4.tar.gz\ncd gromacs-2025.4\nBuild and Install\nmkdir build\ncd build\ncmake .. -DGMX_BUILD_OWN_FFTW=ON \\\n         -DREGRESSIONTEST_DOWNLOAD=ON \\\n         -DGMX_GPU=CUDA \\\n         -DCMAKE_INSTALL_PREFIX=/arf/home/your_username/gromacs\n\nmake\nmake check\nmake install\nNote: Replace your_username with your actual TRUBA username.\nVerify Installation\nsource /arf/home/your_username/gromacs/bin/GMXRC\n\ngmx --version\nYou should see GPU support enabled in the output.\n\n\n\n\nCreate an env.sh file with the following content:\n#!/bin/bash\n# Load required modules\nmodule load comp/gcc/12.3.0\nmodule load lib/cuda/12.6\nmodule load comp/cmake/3.31.1\n\n# Source GROMACS environment\nsource /arf/home/your_username/gromacs/bin/GMXRC\n\necho \"GROMACS environment loaded!\"\nUsage: Source this script in every session and SLURM job:\nsource env.sh\n\n\n\nBarbun-CUDA Nodes\nCPU Cores: 40 per node GPUs: 2x NVIDIA per node Memory: Check with sinfo -Nel for current specs\nPartition: debug (for testing)\nCheck Available Resources\nsinfo -p debug -C barbun-cuda\nsqueue -p debug  # See current queue\n\n\n\nStart an interactive session for testing:\nsrun -p debug \\\n     -C barbun-cuda \\\n     -A your_account \\\n     -N 1 \\\n     --ntasks=40 \\\n     --cpus-per-task=1 \\\n     --gres=gpu:2 \\\n     --time=00:30:00 \\\n     --pty bash\nVerify GPU Access\nnvidia-smi\nShould display both GPUs.\nLoad Environment\nsource env.sh\nTest Run\ngmx mdrun -deffnm nvt \\\n          -v \\\n          -ntmpi 4 \\\n          -ntomp 10 \\\n          -nb gpu \\\n          -bonded gpu \\\n          -pme gpu \\\n          -npme 1 \\\n          -pin on \\\n          -nsteps 10000\nKey flags: -ntmpi: Number of MPI ranks (thread-MPI) -ntomp: OpenMP threads per rank -nb gpu: Nonbonded calculations on GPU -bonded gpu: Bonded calculations on GPU -pme gpu: PME electrostatics on GPU -npme 1: Separate PME rank\n\n\n\nFor 40 cores with 2 GPUs, try different -ntmpi × -ntomp combinations (must equal 40): ### Recommended starting points:\ngmx mdrun -deffnm nvt -v -ntmpi 2 -ntomp 20 -nb gpu -bonded gpu -pme gpu -npme 1 -pin on -nsteps 10000  # 1 rank per GPU\ngmx mdrun -deffnm nvt -v -ntmpi 4 -ntomp 10 -nb gpu -bonded gpu -pme gpu -npme 1 -pin on -nsteps 10000\ngmx mdrun -deffnm nvt -v -ntmpi 5 -ntomp 8  -nb gpu -bonded gpu -pme gpu -npme 1 -pin on -nsteps 10000\ngmx mdrun -deffnm nvt -v -ntmpi 8 -ntomp 5  -nb gpu -bonded gpu -pme gpu -npme 1 -pin on -nsteps 10000\ngmx mdrun -deffnm nvt -v -ntmpi 10 -ntomp 4 -nb gpu -bonded gpu -pme gpu -npme 1 -pin on -nsteps 10000\nCompare the ns/day output to find optimal performance for your system.\nInspect Logs\nless md.log  # Detailed performance metrics\n\n\n\nCreate a SLURM submission script run_md.sh:\n#!/bin/bash\n#SBATCH -p debug                    # Partition (debug/mid/long)\n#SBATCH -C barbun-cuda              # Node constraint\n#SBATCH -A your_account             # Your allocation code\n#SBATCH -J protein_md               # Job name\n#SBATCH -N 1                        # Number of nodes\n#SBATCH --ntasks=40                 # Total tasks\n#SBATCH --cpus-per-task=1           # CPUs per task\n#SBATCH --gres=gpu:2                # GPUs requested\n#SBATCH --time=03:00:00             # Time limit (HH:MM:SS)\n\n\necho \"SLURM_NODELIST: $SLURM_NODELIST\"\necho \"NUMBER OF CORES: $SLURM_NTASKS\"\necho \"NUMBER OF CPUs: $SLURM_NPROCS\"\n\n\n\nsource /arf/home/your_username/env.sh\n\n\n\ngmx mdrun -s md.tpr \\\n          -nsteps 500000 \\\n          -v \\\n          -ntmpi 2 \\\n          -ntomp 20 \\\n          -nb gpu \\\n          -bonded gpu \\\n          -pme gpu \\\n          -npme 1 \\\n          -pin on\n\nexit\nSubmit Job\nsbatch run_md.sh\nMonitor Jobs\nsqueue -u your_username              # Check status\n\nsqueue -j &lt;job_id&gt;                   # Specific job details\n\nscancel &lt;job_id&gt;                     # Cancel job\n\nsacct -j &lt;job_id&gt; --format=JobID,JobName,Elapsed,State  # Job history\n\n\n\n\n\nGPU not detected: Ensure -C barbun-cuda or any gpu node constraint is set\nSlow performance: Try different -ntmpi/-ntomp combinations\nModule errors: Reload modules after reconnecting to TRUBA\nPermission denied: Check file paths and ownership\n\n\n\n\nGROMACS Manual: https://manual.gromacs.org/\nTRUBA Documentation: https://docs.truba.gov.tr/"
+  },
+  {
+    "objectID": "posts/truba_gromacs/index.html#prerequisites",
+    "href": "posts/truba_gromacs/index.html#prerequisites",
+    "title": "Usage of TRUBA with Gromacs",
+    "section": "",
+    "text": "Active TRUBA account with allocation\nBasic Linux/bash familiarity\nSSH access to TRUBA"
+  },
+  {
+    "objectID": "posts/truba_gromacs/index.html#local-gromacs-installation",
+    "href": "posts/truba_gromacs/index.html#local-gromacs-installation",
+    "title": "Usage of TRUBA with Gromacs",
+    "section": "",
+    "text": "TRUBA provides the necessary software as modules:\nmodule load comp/gcc/12.3.0\nmodule load lib/cuda/12.6\nmodule load comp/cmake/3.31.1\nDownload and Extract GROMACS\nwget https://ftp.gromacs.org/gromacs/gromacs-2025.4.tar.gz\nNow, let’s install\ntar xfz gromacs-2025.4.tar.gz\ncd gromacs-2025.4\nBuild and Install\nmkdir build\ncd build\ncmake .. -DGMX_BUILD_OWN_FFTW=ON \\\n         -DREGRESSIONTEST_DOWNLOAD=ON \\\n         -DGMX_GPU=CUDA \\\n         -DCMAKE_INSTALL_PREFIX=/arf/home/your_username/gromacs\n\nmake\nmake check\nmake install\nNote: Replace your_username with your actual TRUBA username.\nVerify Installation\nsource /arf/home/your_username/gromacs/bin/GMXRC\n\ngmx --version\nYou should see GPU support enabled in the output."
+  },
+  {
+    "objectID": "posts/truba_gromacs/index.html#environment-setup-script",
+    "href": "posts/truba_gromacs/index.html#environment-setup-script",
+    "title": "Usage of TRUBA with Gromacs",
+    "section": "",
+    "text": "Create an env.sh file with the following content:\n#!/bin/bash\n# Load required modules\nmodule load comp/gcc/12.3.0\nmodule load lib/cuda/12.6\nmodule load comp/cmake/3.31.1\n\n# Source GROMACS environment\nsource /arf/home/your_username/gromacs/bin/GMXRC\n\necho \"GROMACS environment loaded!\"\nUsage: Source this script in every session and SLURM job:\nsource env.sh"
+  },
+  {
+    "objectID": "posts/truba_gromacs/index.html#truba-node-specifications",
+    "href": "posts/truba_gromacs/index.html#truba-node-specifications",
+    "title": "Usage of TRUBA with Gromacs",
+    "section": "",
+    "text": "Barbun-CUDA Nodes\nCPU Cores: 40 per node GPUs: 2x NVIDIA per node Memory: Check with sinfo -Nel for current specs\nPartition: debug (for testing)\nCheck Available Resources\nsinfo -p debug -C barbun-cuda\nsqueue -p debug  # See current queue"
+  },
+  {
+    "objectID": "posts/truba_gromacs/index.html#interactive-debug-session",
+    "href": "posts/truba_gromacs/index.html#interactive-debug-session",
+    "title": "Usage of TRUBA with Gromacs",
+    "section": "",
+    "text": "Start an interactive session for testing:\nsrun -p debug \\\n     -C barbun-cuda \\\n     -A your_account \\\n     -N 1 \\\n     --ntasks=40 \\\n     --cpus-per-task=1 \\\n     --gres=gpu:2 \\\n     --time=00:30:00 \\\n     --pty bash\nVerify GPU Access\nnvidia-smi\nShould display both GPUs.\nLoad Environment\nsource env.sh\nTest Run\ngmx mdrun -deffnm nvt \\\n          -v \\\n          -ntmpi 4 \\\n          -ntomp 10 \\\n          -nb gpu \\\n          -bonded gpu \\\n          -pme gpu \\\n          -npme 1 \\\n          -pin on \\\n          -nsteps 10000\nKey flags: -ntmpi: Number of MPI ranks (thread-MPI) -ntomp: OpenMP threads per rank -nb gpu: Nonbonded calculations on GPU -bonded gpu: Bonded calculations on GPU -pme gpu: PME electrostatics on GPU -npme 1: Separate PME rank"
+  },
+  {
+    "objectID": "posts/truba_gromacs/index.html#performance-optimization",
+    "href": "posts/truba_gromacs/index.html#performance-optimization",
+    "title": "Usage of TRUBA with Gromacs",
+    "section": "",
+    "text": "For 40 cores with 2 GPUs, try different -ntmpi × -ntomp combinations (must equal 40): ### Recommended starting points:\ngmx mdrun -deffnm nvt -v -ntmpi 2 -ntomp 20 -nb gpu -bonded gpu -pme gpu -npme 1 -pin on -nsteps 10000  # 1 rank per GPU\ngmx mdrun -deffnm nvt -v -ntmpi 4 -ntomp 10 -nb gpu -bonded gpu -pme gpu -npme 1 -pin on -nsteps 10000\ngmx mdrun -deffnm nvt -v -ntmpi 5 -ntomp 8  -nb gpu -bonded gpu -pme gpu -npme 1 -pin on -nsteps 10000\ngmx mdrun -deffnm nvt -v -ntmpi 8 -ntomp 5  -nb gpu -bonded gpu -pme gpu -npme 1 -pin on -nsteps 10000\ngmx mdrun -deffnm nvt -v -ntmpi 10 -ntomp 4 -nb gpu -bonded gpu -pme gpu -npme 1 -pin on -nsteps 10000\nCompare the ns/day output to find optimal performance for your system.\nInspect Logs\nless md.log  # Detailed performance metrics"
+  },
+  {
+    "objectID": "posts/truba_gromacs/index.html#slurm-batch-jobs",
+    "href": "posts/truba_gromacs/index.html#slurm-batch-jobs",
+    "title": "Usage of TRUBA with Gromacs",
+    "section": "",
+    "text": "Create a SLURM submission script run_md.sh:\n#!/bin/bash\n#SBATCH -p debug                    # Partition (debug/mid/long)\n#SBATCH -C barbun-cuda              # Node constraint\n#SBATCH -A your_account             # Your allocation code\n#SBATCH -J protein_md               # Job name\n#SBATCH -N 1                        # Number of nodes\n#SBATCH --ntasks=40                 # Total tasks\n#SBATCH --cpus-per-task=1           # CPUs per task\n#SBATCH --gres=gpu:2                # GPUs requested\n#SBATCH --time=03:00:00             # Time limit (HH:MM:SS)\n\n\necho \"SLURM_NODELIST: $SLURM_NODELIST\"\necho \"NUMBER OF CORES: $SLURM_NTASKS\"\necho \"NUMBER OF CPUs: $SLURM_NPROCS\"\n\n\n\nsource /arf/home/your_username/env.sh\n\n\n\ngmx mdrun -s md.tpr \\\n          -nsteps 500000 \\\n          -v \\\n          -ntmpi 2 \\\n          -ntomp 20 \\\n          -nb gpu \\\n          -bonded gpu \\\n          -pme gpu \\\n          -npme 1 \\\n          -pin on\n\nexit\nSubmit Job\nsbatch run_md.sh\nMonitor Jobs\nsqueue -u your_username              # Check status\n\nsqueue -j &lt;job_id&gt;                   # Specific job details\n\nscancel &lt;job_id&gt;                     # Cancel job\n\nsacct -j &lt;job_id&gt; --format=JobID,JobName,Elapsed,State  # Job history"
+  },
+  {
+    "objectID": "posts/truba_gromacs/index.html#tips-and-common-issues",
+    "href": "posts/truba_gromacs/index.html#tips-and-common-issues",
+    "title": "Usage of TRUBA with Gromacs",
+    "section": "",
+    "text": "GPU not detected: Ensure -C barbun-cuda or any gpu node constraint is set\nSlow performance: Try different -ntmpi/-ntomp combinations\nModule errors: Reload modules after reconnecting to TRUBA\nPermission denied: Check file paths and ownership"
+  },
+  {
+    "objectID": "posts/truba_gromacs/index.html#additional-resources",
+    "href": "posts/truba_gromacs/index.html#additional-resources",
+    "title": "Usage of TRUBA with Gromacs",
+    "section": "",
+    "text": "GROMACS Manual: https://manual.gromacs.org/\nTRUBA Documentation: https://docs.truba.gov.tr/"
+  }
+]
