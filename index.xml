@@ -1,0 +1,624 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss  xmlns:atom="http://www.w3.org/2005/Atom" 
+      xmlns:media="http://search.yahoo.com/mrss/" 
+      xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+      xmlns:dc="http://purl.org/dc/elements/1.1/" 
+      version="2.0">
+<channel>
+<title>i-dev-biodynamics</title>
+<link>https://bogrum.xyz/</link>
+<atom:link href="https://bogrum.xyz/index.xml" rel="self" type="application/rss+xml"/>
+<description>Molecular modeling, GROMACS, and Python tutorials.</description>
+<generator>quarto-1.8.26</generator>
+<lastBuildDate>Sat, 03 Jan 2026 21:00:00 GMT</lastBuildDate>
+<item>
+  <title>Usage of TRUBA with Gromacs</title>
+  <dc:creator>Emre Taha Çevik</dc:creator>
+  <link>https://bogrum.xyz/posts/truba_gromacs/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<section id="gromacs-on-truba---lab-tutorial" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> GROMACS on TRUBA - Lab Tutorial</h1>
+<p>This tutorial covers installing and running GROMACS with GPU acceleration on TRUBA’s HPC cluster.</p>
+<section id="prerequisites" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="prerequisites"><span class="header-section-number">1.1</span> Prerequisites</h2>
+<ul>
+<li>Active TRUBA account with allocation</li>
+<li>Basic Linux/bash familiarity</li>
+<li>SSH access to TRUBA</li>
+</ul>
+</section>
+<section id="local-gromacs-installation" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="local-gromacs-installation"><span class="header-section-number">1.2</span> Local GROMACS Installation</h2>
+<section id="load-required-modules" class="level3" data-number="1.2.1">
+<h3 data-number="1.2.1" class="anchored" data-anchor-id="load-required-modules"><span class="header-section-number">1.2.1</span> Load Required Modules</h3>
+<p>TRUBA provides the necessary software as modules:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">module</span> load comp/gcc/12.3.0</span>
+<span id="cb1-2"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">module</span> load lib/cuda/12.6</span>
+<span id="cb1-3"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">module</span> load comp/cmake/3.31.1</span></code></pre></div></div>
+<p>Download and Extract GROMACS</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">wget</span> https://ftp.gromacs.org/gromacs/gromacs-2025.4.tar.gz</span></code></pre></div></div>
+<p>Now, let’s install</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tar</span> xfz gromacs-2025.4.tar.gz</span>
+<span id="cb3-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> gromacs-2025.4</span>
+<span id="cb3-3"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">Build</span> and Install</span>
+<span id="cb3-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mkdir</span> build</span>
+<span id="cb3-5"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> build</span>
+<span id="cb3-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cmake</span> .. <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-DGMX_BUILD_OWN_FFTW</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>ON <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-7">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-DREGRESSIONTEST_DOWNLOAD</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>ON <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-8">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-DGMX_GPU</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>CUDA <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-9">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-DCMAKE_INSTALL_PREFIX</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>/arf/home/your_username/gromacs</span>
+<span id="cb3-10"></span>
+<span id="cb3-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">make</span></span>
+<span id="cb3-12"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">make</span> check</span>
+<span id="cb3-13"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">make</span> install</span></code></pre></div></div>
+<p>Note: Replace your_username with your actual TRUBA username.</p>
+<p>Verify Installation</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> /arf/home/your_username/gromacs/bin/GMXRC</span>
+<span id="cb4-2"></span>
+<span id="cb4-3"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">gmx</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--version</span></span></code></pre></div></div>
+<p>You should see GPU support enabled in the output.</p>
+</section>
+</section>
+<section id="environment-setup-script" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="environment-setup-script"><span class="header-section-number">1.3</span> Environment Setup Script</h2>
+<p>Create an env.sh file with the following content:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#!/bin/bash</span></span>
+<span id="cb5-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load required modules</span></span>
+<span id="cb5-3"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">module</span> load comp/gcc/12.3.0</span>
+<span id="cb5-4"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">module</span> load lib/cuda/12.6</span>
+<span id="cb5-5"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">module</span> load comp/cmake/3.31.1</span>
+<span id="cb5-6"></span>
+<span id="cb5-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Source GROMACS environment</span></span>
+<span id="cb5-8"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> /arf/home/your_username/gromacs/bin/GMXRC</span>
+<span id="cb5-9"></span>
+<span id="cb5-10"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"GROMACS environment loaded!"</span></span></code></pre></div></div>
+<p>Usage: Source this script in every session and SLURM job:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> env.sh</span></code></pre></div></div>
+</section>
+<section id="truba-node-specifications" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="truba-node-specifications"><span class="header-section-number">1.4</span> TRUBA Node Specifications</h2>
+<p>Barbun-CUDA Nodes</p>
+<p>CPU Cores: 40 per node GPUs: 2x NVIDIA per node Memory: Check with sinfo -Nel for current specs</p>
+<p>Partition: debug (for testing)</p>
+<p>Check Available Resources</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">sinfo</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-p</span> debug <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-C</span> barbun-cuda</span>
+<span id="cb7-2"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">squeue</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-p</span> debug  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># See current queue</span></span></code></pre></div></div>
+</section>
+<section id="interactive-debug-session" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="interactive-debug-session"><span class="header-section-number">1.5</span> Interactive Debug Session</h2>
+<p>Start an interactive session for testing:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">srun</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-p</span> debug <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb8-2">     <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-C</span> barbun-cuda <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb8-3">     <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-A</span> your_account <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb8-4">     <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-N</span> 1 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb8-5">     <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--ntasks</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>40 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb8-6">     <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--cpus-per-task</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>1 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb8-7">     <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--gres</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>gpu:2 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb8-8">     <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--time</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>00:30:00 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb8-9">     <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--pty</span> bash</span></code></pre></div></div>
+<p>Verify GPU Access</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">nvidia-smi</span></span></code></pre></div></div>
+<p>Should display both GPUs.</p>
+<p>Load Environment</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> env.sh</span></code></pre></div></div>
+<p>Test Run</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">gmx</span> mdrun <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-deffnm</span> nvt <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-2">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-v</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-3">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-ntmpi</span> 4 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-4">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-ntomp</span> 10 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-5">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-nb</span> gpu <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-6">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-bonded</span> gpu <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-7">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-pme</span> gpu <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-8">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-npme</span> 1 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-9">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-pin</span> on <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-10">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-nsteps</span> 10000</span></code></pre></div></div>
+<p>Key flags: -ntmpi: Number of MPI ranks (thread-MPI) -ntomp: OpenMP threads per rank -nb gpu: Nonbonded calculations on GPU -bonded gpu: Bonded calculations on GPU -pme gpu: PME electrostatics on GPU -npme 1: Separate PME rank</p>
+</section>
+<section id="performance-optimization" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="performance-optimization"><span class="header-section-number">1.6</span> Performance Optimization</h2>
+<p>For 40 cores with 2 GPUs, try different -ntmpi × -ntomp combinations (must equal 40): ### Recommended starting points:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">gmx</span> mdrun <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-deffnm</span> nvt <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-v</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-ntmpi</span> 2 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-ntomp</span> 20 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-nb</span> gpu <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-bonded</span> gpu <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-pme</span> gpu <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-npme</span> 1 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-pin</span> on <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-nsteps</span> 10000  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 1 rank per GPU</span></span>
+<span id="cb12-2"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">gmx</span> mdrun <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-deffnm</span> nvt <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-v</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-ntmpi</span> 4 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-ntomp</span> 10 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-nb</span> gpu <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-bonded</span> gpu <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-pme</span> gpu <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-npme</span> 1 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-pin</span> on <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-nsteps</span> 10000</span>
+<span id="cb12-3"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">gmx</span> mdrun <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-deffnm</span> nvt <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-v</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-ntmpi</span> 5 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-ntomp</span> 8  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-nb</span> gpu <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-bonded</span> gpu <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-pme</span> gpu <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-npme</span> 1 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-pin</span> on <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-nsteps</span> 10000</span>
+<span id="cb12-4"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">gmx</span> mdrun <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-deffnm</span> nvt <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-v</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-ntmpi</span> 8 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-ntomp</span> 5  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-nb</span> gpu <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-bonded</span> gpu <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-pme</span> gpu <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-npme</span> 1 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-pin</span> on <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-nsteps</span> 10000</span>
+<span id="cb12-5"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">gmx</span> mdrun <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-deffnm</span> nvt <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-v</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-ntmpi</span> 10 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-ntomp</span> 4 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-nb</span> gpu <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-bonded</span> gpu <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-pme</span> gpu <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-npme</span> 1 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-pin</span> on <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-nsteps</span> 10000</span></code></pre></div></div>
+<p>Compare the ns/day output to find optimal performance for your system.</p>
+<p>Inspect Logs</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">less</span> md.log  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Detailed performance metrics</span></span></code></pre></div></div>
+</section>
+<section id="slurm-batch-jobs" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="slurm-batch-jobs"><span class="header-section-number">1.7</span> SLURM Batch Jobs</h2>
+<p>Create a SLURM submission script run_md.sh:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#!/bin/bash</span></span>
+<span id="cb14-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH -p debug                    # Partition (debug/mid/long)</span></span>
+<span id="cb14-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH -C barbun-cuda              # Node constraint</span></span>
+<span id="cb14-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH -A your_account             # Your allocation code</span></span>
+<span id="cb14-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH -J protein_md               # Job name</span></span>
+<span id="cb14-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH -N 1                        # Number of nodes</span></span>
+<span id="cb14-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --ntasks=40                 # Total tasks</span></span>
+<span id="cb14-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --cpus-per-task=1           # CPUs per task</span></span>
+<span id="cb14-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --gres=gpu:2                # GPUs requested</span></span>
+<span id="cb14-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --time=03:00:00             # Time limit (HH:MM:SS)</span></span></code></pre></div></div>
+<section id="print-node-info" class="level3" data-number="1.7.1">
+<h3 data-number="1.7.1" class="anchored" data-anchor-id="print-node-info"><span class="header-section-number">1.7.1</span> Print node info</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"SLURM_NODELIST: </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$SLURM_NODELIST</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb15-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"NUMBER OF CORES: </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$SLURM_NTASKS</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb15-3"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"NUMBER OF CPUs: </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$SLURM_NPROCS</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span></code></pre></div></div>
+</section>
+<section id="load-environment" class="level3" data-number="1.7.2">
+<h3 data-number="1.7.2" class="anchored" data-anchor-id="load-environment"><span class="header-section-number">1.7.2</span> Load environment</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> /arf/home/your_username/env.sh</span></code></pre></div></div>
+</section>
+<section id="run-simulation" class="level3" data-number="1.7.3">
+<h3 data-number="1.7.3" class="anchored" data-anchor-id="run-simulation"><span class="header-section-number">1.7.3</span> Run simulation</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">gmx</span> mdrun <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-s</span> md.tpr <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb17-2">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-nsteps</span> 500000 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb17-3">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-v</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb17-4">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-ntmpi</span> 2 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb17-5">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-ntomp</span> 20 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb17-6">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-nb</span> gpu <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb17-7">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-bonded</span> gpu <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb17-8">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-pme</span> gpu <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb17-9">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-npme</span> 1 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb17-10">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-pin</span> on</span>
+<span id="cb17-11"></span>
+<span id="cb17-12"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">exit</span></span></code></pre></div></div>
+<p>Submit Job</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">sbatch</span> run_md.sh</span></code></pre></div></div>
+<p>Monitor Jobs</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">squeue</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-u</span> your_username              <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Check status</span></span>
+<span id="cb19-2"></span>
+<span id="cb19-3"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">squeue</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-j</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>job_id<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span>                   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Specific job details</span></span>
+<span id="cb19-4"></span>
+<span id="cb19-5"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">scancel</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>job_id<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span>                     <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Cancel job</span></span>
+<span id="cb19-6"></span>
+<span id="cb19-7"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">sacct</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-j</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span>job_id<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> --format=JobID,JobName,Elapsed,State  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Job history</span></span></code></pre></div></div>
+</section>
+</section>
+<section id="tips-and-common-issues" class="level2" data-number="1.8">
+<h2 data-number="1.8" class="anchored" data-anchor-id="tips-and-common-issues"><span class="header-section-number">1.8</span> Tips and Common Issues</h2>
+<ul>
+<li>GPU not detected: Ensure -C barbun-cuda or any gpu node constraint is set</li>
+<li>Slow performance: Try different -ntmpi/-ntomp combinations</li>
+<li>Module errors: Reload modules after reconnecting to TRUBA</li>
+<li>Permission denied: Check file paths and ownership</li>
+</ul>
+</section>
+<section id="additional-resources" class="level2" data-number="1.9">
+<h2 data-number="1.9" class="anchored" data-anchor-id="additional-resources"><span class="header-section-number">1.9</span> Additional Resources</h2>
+<p>GROMACS Manual: https://manual.gromacs.org/</p>
+<p>TRUBA Documentation: https://docs.truba.gov.tr/</p>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <category>Molecular Dynamics Simulations</category>
+  <category>TRUBA</category>
+  <guid>https://bogrum.xyz/posts/truba_gromacs/</guid>
+  <pubDate>Sat, 03 Jan 2026 21:00:00 GMT</pubDate>
+  <media:content url="https://bogrum.xyz/posts/truba_gromacs/gromacs.png" medium="image" type="image/png" height="62" width="144"/>
+</item>
+</channel>
+</rss>
