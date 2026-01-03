@@ -3,7 +3,7 @@ project:
 
 website:
   description: "Molecular modeling, GROMACS, and Python tutorials."
-  site-url: https://your-website-url.example.com # you must change this appropriately for RSS feeds to work properly
+  site-url: https://bogrum.xyz # you must change this appropriately for RSS feeds to work properly
   title: "i-dev-biodynamics"
   navbar:
     right:
