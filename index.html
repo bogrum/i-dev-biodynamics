@@ -1,831 +1,151 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
-
+<!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.26">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-
-
-<title>i-dev-biodynamics // Emre’s blog. – i-dev-biodynamics</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Emre Taha Çevik</title>
+<meta name="description" content="Emre Taha Çevik, MSc student in bioinformatics at Gebze Technical University. Molecular dynamics, cryptic and allosteric pockets, AI structure prediction. Looking for a PhD from autumn 2027.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="icon" href="profile.png">
 <style>
-code{white-space: pre-wrap;}
-span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
-div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-ul.task-list{list-style: none;}
-ul.task-list li input[type="checkbox"] {
-  width: 0.8em;
-  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
-  vertical-align: middle;
+/* Hallmark · macrostructure: Long Document with side-rail profile (N3 side-rail) · genre: editorial · tone: technical-quiet
+ * theme: custom (vibe: "solvent box, pocket map, lab notebook") · paper oklch(96.6% 0.006 180) · accent oklch(52% 0.09 172) teal
+ * display: Source Sans 3 (700) · body: Source Serif 4 · axes: light only / grotesk-sans on serif body / chromatic-other (teal)
+ * enrichment: E5 hand-built SVG (pocket-occupancy schematic) · nav: none (single page) · footer: Ft2 inline line
+ * pre-emit critique: P4 H4 E4 S5 R5 V4 · contrast: pass (40–41) · honest: pass (46) · tokens: pass (48) · mobile: pass (34, 49–51)
+ */
+:root{
+  --color-paper:oklch(96.6% 0.006 180);--color-ink:oklch(24% 0.025 235);--color-muted:oklch(48% 0.02 230);
+  --color-rule:oklch(86% 0.012 185);--color-accent:oklch(52% 0.09 172);--color-pocket-soft:oklch(80% 0.05 172);
+  --color-cryptic:oklch(64% 0.13 80);--color-lane:oklch(92.5% 0.01 180);--color-focus:oklch(64% 0.13 80);
+  --font-display:"Source Sans 3",system-ui,sans-serif;--font-body:"Source Serif 4",Georgia,serif;
+  --space-2xs:.25rem;--space-xs:.5rem;--space-sm:.75rem;--space-md:1rem;--space-lg:1.5rem;--space-xl:2rem;--space-2xl:2.5rem;--space-3xl:3rem;--space-4xl:4rem;
+  --text-sm:.875rem;--text-base:1.0625rem;--text-lg:1.25rem;--text-xl:1.375rem;--text-display:clamp(2.25rem,6vw,3.375rem);
+  --ease-out:cubic-bezier(.22,1,.36,1);
 }
+*{box-sizing:border-box}
+html,body{overflow-x:clip}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--color-paper);color:var(--color-ink);font:400 var(--text-base)/1.62 var(--font-body)}
+a{color:var(--color-accent);text-underline-offset:.18em;text-decoration-thickness:1px}
+a:hover{text-decoration-thickness:2px}
+a:focus-visible{outline:2px solid var(--color-focus);outline-offset:3px;border-radius:2px}
+h1{font:700 clamp(2rem,3.2vw,2.75rem)/1.06 var(--font-display);letter-spacing:-.015em;margin:0;overflow-wrap:anywhere;min-width:0}
+figure{margin:var(--space-2xl) 0 0}
+.traj{width:100%;height:auto;display:block}
+.traj .lane{fill:var(--color-lane)}
+.traj .occ.persistent{fill:var(--color-accent)}
+.traj .occ.intermittent{fill:var(--color-pocket-soft)}
+.traj .occ.cryptic{fill:var(--color-cryptic)}
+.traj .playhead{stroke:var(--color-ink);stroke-width:2;opacity:0;animation:sweep 2.6s var(--ease-out) .4s 1 both}
+@keyframes sweep{0%{transform:translateX(0);opacity:.9}92%{opacity:.9}100%{transform:translateX(960px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.traj .playhead{animation:none}}
+.axis{display:flex;justify-content:space-between;font:400 var(--text-sm)/1.2 var(--font-display);color:var(--color-muted);margin-top:var(--space-2xs)}
+figcaption{font:400 .9rem/1.45 var(--font-display);color:var(--color-muted);margin-top:var(--space-xs);max-width:40rem}
+.key{display:inline-block;width:.75em;height:.75em;vertical-align:-.05em;margin:0 var(--space-2xs) 0 .1em;border-radius:1px}
+.key.persistent{background:var(--color-accent)}.key.intermittent{background:var(--color-pocket-soft)}.key.cryptic{background:var(--color-cryptic)}
+h2{font:700 var(--text-xl)/1.25 var(--font-display);margin:var(--space-3xl) 0 var(--space-md);padding-top:var(--space-md);border-top:1px solid var(--color-rule)}
+h3{font:600 1.08rem/1.35 var(--font-display);margin:var(--space-lg) 0 var(--space-2xs)}
+p{margin:var(--space-xs) 0 0}
+.meta{font:400 .92rem/1.45 var(--font-display);color:var(--color-muted);margin:var(--space-2xs) 0 var(--space-xs)}
+.aim{margin:var(--space-4xl) 0 0;max-width:38rem}
+.aim h2{border-top:0;padding-top:0;margin:0 0 var(--space-xs);font-size:var(--text-base);color:var(--color-muted)}
+.aim p{font-size:var(--text-xl);line-height:1.45;margin:0}
+ul.plain{list-style:none;padding:0;margin:var(--space-sm) 0 0}
+ul.plain li{margin:var(--space-xs) 0}
+ul.posts{list-style:none;padding:0;margin:var(--space-sm) 0 0}
+ul.posts li{margin:var(--space-sm) 0}
+ul.posts a{font:600 var(--text-base)/1.4 var(--font-display)}
+.post-meta{display:block;font:400 .92rem/1.45 var(--font-display);color:var(--color-muted);margin-top:var(--space-2xs)}
+footer{margin-top:var(--space-3xl);font:400 var(--text-sm)/1.4 var(--font-display);color:var(--color-muted)}
+.page{display:grid;grid-template-columns:minmax(15rem,21rem) minmax(0,1fr);gap:var(--space-4xl);max-width:80rem;margin:0 auto;padding:var(--space-4xl) var(--space-2xl)}
+.rail{position:sticky;top:var(--space-2xl);align-self:start}
+.portrait{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;object-position:50% 28%;border-radius:4px;background:var(--color-lane)}
+.rail h1{margin-top:var(--space-lg)}
+.status{margin:var(--space-sm) 0 0;font:400 1rem/1.45 var(--font-display);color:var(--color-muted)}
+.status strong{display:block;margin-top:var(--space-xs);color:var(--color-ink);font-weight:600}
+.links{list-style:none;padding:0;margin:var(--space-lg) 0 0;font:600 1rem/1.4 var(--font-display)}
+.links li{margin:var(--space-2xs) 0}
+.links a{white-space:nowrap}
+.content{min-width:0;max-width:50rem}
+.lede{font-size:clamp(1.375rem,2.1vw,1.75rem);line-height:1.38;margin:0;max-width:40rem}
+.content p, .content li{max-width:42rem}
+.content figure{max-width:none}
+@media (max-width:900px){.page{grid-template-columns:minmax(0,1fr);gap:var(--space-2xl);padding:var(--space-2xl) 1.25rem}
+.rail{position:static;display:grid;grid-template-columns:8.5rem minmax(0,1fr);gap:var(--space-lg);align-items:end}
+.rail h1{margin-top:0}.links{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:var(--space-xs) var(--space-lg);margin-top:0}.links li{margin:0}}
+@media (max-width:420px){.rail{grid-template-columns:minmax(0,1fr)}.portrait{width:9rem}.traj{height:76px}}
 </style>
-
-
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-afb1490f8a99addc6ee70b9cb0f51ec8.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-772334b10d91ab2c86a29029e0ed966f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-afb1490f8a99addc6ee70b9cb0f51ec8.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
-<script id="quarto-search-options" type="application/json">{
-  "location": "navbar",
-  "copy-button": false,
-  "collapse-after": 3,
-  "panel-placement": "end",
-  "type": "overlay",
-  "limit": 50,
-  "keyboard-shortcut": [
-    "f",
-    "/",
-    "s"
-  ],
-  "show-item-context": false,
-  "language": {
-    "search-no-results-text": "No results",
-    "search-matching-documents-text": "matching documents",
-    "search-copy-link-title": "Copy link to search",
-    "search-hide-matches-text": "Hide additional matches",
-    "search-more-match-text": "more match in this document",
-    "search-more-matches-text": "more matches in this document",
-    "search-clear-button-title": "Clear",
-    "search-text-placeholder": "",
-    "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit",
-    "search-label": "Search"
-  }
-}</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-date','listing-title','listing-author','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="styles.css">
-<link rel="alternate" type="application/rss+xml" title="i-dev-biodynamics" href="index.xml" data-external="1"></head>
-
-<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
-    const toggleBodyColorMode = (bsSheetEl) => {
-      const mode = bsSheetEl.getAttribute("data-mode");
-      const bodyEl = window.document.querySelector("body");
-      if (mode === "dark") {
-        bodyEl.classList.add("quarto-dark");
-        bodyEl.classList.remove("quarto-light");
-      } else {
-        bodyEl.classList.add("quarto-light");
-        bodyEl.classList.remove("quarto-dark");
-      }
-    }
-    const toggleBodyColorPrimary = () => {
-      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
-      if (bsSheetEl) {
-        toggleBodyColorMode(bsSheetEl);
-      }
-    }
-    const setColorSchemeToggle = (alternate) => {
-      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
-      for (let i=0; i < toggles.length; i++) {
-        const toggle = toggles[i];
-        if (toggle) {
-          if (alternate) {
-            toggle.classList.add("alternate");
-          } else {
-            toggle.classList.remove("alternate");
-          }
-        }
-      }
-    };
-    const toggleColorMode = (alternate) => {
-      // Switch the stylesheets
-      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
-      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
-      manageTransitions('#quarto-margin-sidebar .nav-link', false);
-      if (alternate) {
-        // note: dark is layered on light, we don't disable primary!
-        enableStylesheet(alternateStylesheets);
-        for (const sheetNode of alternateStylesheets) {
-          if (sheetNode.id === "quarto-bootstrap") {
-            toggleBodyColorMode(sheetNode);
-          }
-        }
-      } else {
-        disableStylesheet(alternateStylesheets);
-        enableStylesheet(primaryStylesheets)
-        toggleBodyColorPrimary();
-      }
-      manageTransitions('#quarto-margin-sidebar .nav-link', true);
-      // Switch the toggles
-      setColorSchemeToggle(alternate)
-      // Hack to workaround the fact that safari doesn't
-      // properly recolor the scrollbar when toggling (#1455)
-      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
-        manageTransitions("body", false);
-        window.scrollTo(0, 1);
-        setTimeout(() => {
-          window.scrollTo(0, 0);
-          manageTransitions("body", true);
-        }, 40);
-      }
-    }
-    const disableStylesheet = (stylesheets) => {
-      for (let i=0; i < stylesheets.length; i++) {
-        const stylesheet = stylesheets[i];
-        stylesheet.rel = 'disabled-stylesheet';
-      }
-    }
-    const enableStylesheet = (stylesheets) => {
-      for (let i=0; i < stylesheets.length; i++) {
-        const stylesheet = stylesheets[i];
-        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
-          stylesheet.rel = 'stylesheet';
-        }
-      }
-    }
-    const manageTransitions = (selector, allowTransitions) => {
-      const els = window.document.querySelectorAll(selector);
-      for (let i=0; i < els.length; i++) {
-        const el = els[i];
-        if (allowTransitions) {
-          el.classList.remove('notransition');
-        } else {
-          el.classList.add('notransition');
-        }
-      }
-    }
-    const isFileUrl = () => {
-      return window.location.protocol === 'file:';
-    }
-    const hasAlternateSentinel = () => {
-      let styleSentinel = getColorSchemeSentinel();
-      if (styleSentinel !== null) {
-        return styleSentinel === "alternate";
-      } else {
-        return false;
-      }
-    }
-    const setStyleSentinel = (alternate) => {
-      const value = alternate ? "alternate" : "default";
-      if (!isFileUrl()) {
-        window.localStorage.setItem("quarto-color-scheme", value);
-      } else {
-        localAlternateSentinel = value;
-      }
-    }
-    const getColorSchemeSentinel = () => {
-      if (!isFileUrl()) {
-        const storageValue = window.localStorage.getItem("quarto-color-scheme");
-        return storageValue != null ? storageValue : localAlternateSentinel;
-      } else {
-        return localAlternateSentinel;
-      }
-    }
-    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
-      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
-      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
-      let newTheme = '';
-      if(authorPrefersDark) {
-        newTheme = isAlternate ? baseTheme : alternateTheme;
-      } else {
-        newTheme = isAlternate ? alternateTheme : baseTheme;
-      }
-      const changeGiscusTheme = () => {
-        // From: https://github.com/giscus/giscus/issues/336
-        const sendMessage = (message) => {
-          const iframe = document.querySelector('iframe.giscus-frame');
-          if (!iframe) return;
-          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
-        }
-        sendMessage({
-          setConfig: {
-            theme: newTheme
-          }
-        });
-      }
-      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
-      if (isGiscussLoaded) {
-        changeGiscusTheme();
-      }
-    };
-    const authorPrefersDark = false;
-    const darkModeDefault = authorPrefersDark;
-      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
-      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
-    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
-    // Dark / light mode switch
-    window.quartoToggleColorScheme = () => {
-      // Read the current dark / light value
-      let toAlternate = !hasAlternateSentinel();
-      toggleColorMode(toAlternate);
-      setStyleSentinel(toAlternate);
-      toggleGiscusIfUsed(toAlternate, darkModeDefault);
-      window.dispatchEvent(new Event('resize'));
-    };
-    // Switch to dark mode if need be
-    if (hasAlternateSentinel()) {
-      toggleColorMode(true);
-    } else {
-      toggleColorMode(false);
-    }
-  </script>
-
-<div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top quarto-banner">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
-      <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">i-dev-biodynamics</span>
-    </a>
-  </div>
-            <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-  <span class="navbar-toggler-icon"></span>
-</button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav navbar-nav-scroll ms-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
-<span class="menu-text">About Me</span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/bogrum"> <i class="bi bi-github" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://bsky.app/profile/i-dev-dynamics.bsky.social"> <i class="bi bi-bsky" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
+</head>
+<body>
+<div class="page">
+<aside class="rail">
+<img class="portrait" src="profile.png" alt="Emre Taha Çevik at the HIBIT 2024 symposium" width="800" height="800">
+<div>
+<h1>Emre Taha Çevik</h1>
+<p class="status">MSc student in Bioinformatics and Systems Biology, Gebze Technical University (Türkiye), finishing June 2027.<strong>Looking for a PhD position starting autumn 2027.</strong></p>
+</div>
+<ul class="links">
+<li><a href="mailto:emretcevik@gmail.com">emretcevik@gmail.com</a></li>
+<li><a href="cv.pdf">CV (PDF)</a></li>
+<li><a href="https://github.com/bogrum">GitHub</a></li>
+<li><a href="https://www.linkedin.com/in/emrecev/">LinkedIn</a></li>
+<li><a href="https://orcid.org/0009-0008-3737-5910">ORCID</a></li>
+<li><a href="https://bsky.app/profile/i-dev-dynamics.bsky.social">Bluesky</a></li>
 </ul>
-          </div> <!-- /navcollapse -->
-            <div class="quarto-navbar-tools">
-  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</aside>
+<main class="content">
+<p class="lede">I study how proteins open binding pockets as they move, and how to find those pockets in molecular dynamics simulations before they show up in any crystal structure.</p>
+<figure>
+<svg class="traj" viewBox="0 0 960 104" role="img" aria-labelledby="trajTitle trajDesc" preserveAspectRatio="none">
+<title id="trajTitle">Pocket occupancy along an MD trajectory</title>
+<desc id="trajDesc">Schematic map with three pockets across simulation frames: one almost always open, one opening and closing, and one cryptic pocket that appears only in a short window.</desc>
+<rect class="lane" x="0" y="8" width="960" height="22"/><rect class="occ persistent" x="0.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="10.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="20.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="30.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="40.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="50.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="60.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="70.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="80.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="90.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="100.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="110.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="120.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="130.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="140.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="150.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="160.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="180.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="190.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="210.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="220.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="230.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="240.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="250.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="260.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="270.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="280.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="290.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="300.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="310.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="320.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="330.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="340.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="350.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="360.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="370.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="380.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="390.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="400.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="410.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="420.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="430.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="440.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="450.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="460.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="470.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="480.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="490.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="510.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="520.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="530.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="540.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="550.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="560.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="570.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="580.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="590.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="600.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="610.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="620.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="630.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="640.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="650.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="660.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="680.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="690.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="700.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="710.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="720.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="740.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="750.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="760.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="770.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="780.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="790.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="800.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="810.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="820.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="830.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="840.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="850.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="860.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="870.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="880.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="890.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="900.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="910.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="920.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="930.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="940.6" y="8" width="8.8" height="22"/><rect class="occ persistent" x="950.6" y="8" width="8.8" height="22"/><rect class="lane" x="0" y="40" width="960" height="22"/><rect class="occ intermittent" x="0.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="30.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="40.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="50.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="60.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="70.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="80.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="90.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="100.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="110.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="120.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="130.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="150.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="160.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="170.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="180.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="190.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="210.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="440.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="450.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="460.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="470.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="480.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="490.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="500.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="510.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="520.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="530.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="540.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="550.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="560.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="570.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="580.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="590.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="610.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="620.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="630.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="640.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="650.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="660.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="880.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="900.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="910.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="920.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="930.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="940.6" y="40" width="8.8" height="22"/><rect class="occ intermittent" x="950.6" y="40" width="8.8" height="22"/><rect class="lane" x="0" y="72" width="960" height="22"/><rect class="occ cryptic" x="310.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="320.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="520.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="530.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="540.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="560.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="570.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="580.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="590.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="600.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="620.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="630.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="640.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="650.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="660.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="670.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="680.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="690.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="700.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="710.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="720.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="740.6" y="72" width="8.8" height="22"/><rect class="occ cryptic" x="880.6" y="72" width="8.8" height="22"/>
+<line class="playhead" x1="0" y1="0" x2="0" y2="104"/>
+</svg>
+<div class="axis" aria-hidden="true"><span>frame 0</span><span>1 µs</span></div>
+<figcaption>Schematic of the kind of map PocketHunter produces: pockets detected frame by frame along a trajectory. <span class="key persistent"></span>a persistent pocket, <span class="key intermittent"></span>one that opens and closes, <span class="key cryptic"></span>a cryptic pocket that exists only for a short stretch of the simulation and is easy to miss in static structures.</figcaption>
+</figure>
+<h2>Research</h2>
+<h3>PocketHunter</h3>
+<p class="meta">Lead developer at Gebze Technical University, with Dr. Onur Serçinoğlu, since 2023</p>
+<p>PocketHunter extracts frames from MD trajectories, predicts pockets in each frame with P2Rank and clusters them, so that persistent, transient and cryptic sites can be tracked and compared. PocketHunter Suite is the public web platform around it, with SMINA docking and a Mol* viewer. A manuscript is in preparation for the <em>Nucleic Acids Research</em> Web Server Issue. <a href="https://github.com/costbio/PocketHunter">Code</a>, <a href="https://github.com/costbio/PocketHunter-Suite">web platform code</a>.</p>
+
+<h3>Structural modelling of peptide–MHC complexes</h3>
+<p class="meta">Scholarship holder at the Health Institutes of Türkiye (TÜSEB), Turkish Cancer Institute, since 2025</p>
+<p>In a national project on neoantigen discovery for mRNA cancer vaccines, I model peptide–MHC complexes with deep-learning structure predictors (Chai-1, Boltz-2) and assess them with replicated MD simulations. My MSc thesis builds on this project: <em>Molecular Modeling and Machine Learning Approaches for Neoantigen Prediction</em>.</p>
+
+<h3>Cryptic allosteric pockets in full-length PTP1B</h3>
+<p class="meta">MD lead and mentor in a BSc graduation project, 2025–2026</p>
+<p>I ran microsecond MD simulations of an AlphaFold3 model of full-length PTP1B to expose allosteric pockets around its C-terminal region, the starting point for a large virtual screening campaign on the national TRUBA HPC cluster.</p>
+
+<h3>Simulation at scale</h3>
+<p>I use GROMACS daily and ran a systematic GPU benchmark of it on TRUBA, about 600 runs across MPI, OpenMP and GPU settings (<a href="https://github.com/bogrum/truba-gromacs-benchmark">repository</a>, <a href="posts/truba_gromacs/index.html">write-up</a>). I also wrote <a href="https://github.com/bogrum/mdkit">mdkit</a> for reproducible analysis across many complexes and replicas.</p>
+
+<section class="aim">
+<h2>What I want to work on</h2>
+<p>Learned structure predictors are fast but can be confidently wrong; simulations are interpretable but slow. I want to spend a PhD combining the two: generative and geometric models of conformational ensembles, checked and refined with MD, to find binding sites that matter for drug design and immunology.</p>
+</section>
+
+<h2>Talks and community</h2>
+<ul class="plain">
+<li>Oral talk on the first version of PocketHunter, HIBIT 2024, Istanbul, December 2024.</li>
+<li>President of ISCB RSG-Türkiye and member of the ISCB Student Council. I built and maintain the group's <a href="https://rsg-turkiye.iscbsc.org">bilingual web platform</a> and helped run three national student symposia.</li>
+<li>Organised the RSG-Türkiye local sites of the nf-core hackathon in 2025 and 2026.</li>
+</ul>
+
+<h2>Writing</h2>
+<p>Notes and tutorials from day-to-day simulation work.</p>
+<ul class="posts">
+<li><a href="posts/truba_gromacs/index.html">Usage of TRUBA with GROMACS</a><span class="post-meta">January 2026. Installing and running GROMACS with GPU acceleration on the TRUBA cluster, as a lab tutorial.</span></li>
+</ul>
+
+<h2>Contact</h2>
+<p>The fastest way to reach me is e-mail, at <a href="mailto:emretcevik@gmail.com">emretcevik@gmail.com</a>. My CV is here as a <a href="cv.pdf">PDF</a>.</p>
+<footer>Last updated October 2026.</footer>
+</main>
 </div>
-      </div> <!-- /container-fluid -->
-    </nav>
-</header>
-<!-- content -->
-<header id="title-block-header" class="quarto-title-block default page-columns page-full">
-  <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-page-left">
-      <h1 class="title">i-dev-biodynamics // Emre’s blog.</h1>
-                      </div>
-  </div>
-    
-  
-  <div class="quarto-title-meta column-page-left">
-
-      
-    
-      
-    </div>
-    
-  
-  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
-<!-- sidebar -->
-<!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(1)</span></div><div class="category" data-category="TW9sZWN1bGFyJTIwRHluYW1pY3MlMjBTaW11bGF0aW9ucw==">Molecular Dynamics Simulations <span class="quarto-category-count">(1)</span></div><div class="category" data-category="VFJVQkE=">TRUBA <span class="quarto-category-count">(1)</span></div></div></div>
-<!-- main -->
-<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
-
-
-
-
-
-
-
-
-
-
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="TW9sZWN1bGFyJTIwRHluYW1pY3MlMjBTaW11bGF0aW9ucyUyQ1RSVUJB" data-listing-date-sort="1767474000000" data-listing-file-modified-sort="1767557214237" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="969">
-<div class="thumbnail"><a href="./posts/truba_gromacs/index.html" class="no-external">
-
-<img loading="lazy" src="./posts/truba_gromacs/gromacs.png" class="thumbnail-image">
-
-</a></div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/truba_gromacs/index.html" class="no-external">Usage of TRUBA with Gromacs</a>
-</h3>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('TW9sZWN1bGFyJTIwRHluYW1pY3MlMjBTaW11bGF0aW9ucw=='); return false;">Molecular Dynamics Simulations</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('VFJVQkE='); return false;">TRUBA</div>
-
-</div>
-<div class="delink listing-description"><a href="./posts/truba_gromacs/index.html" class="no-external">
-This tutorial covers installing and running GROMACS with GPU acceleration on TRUBA’s HPC cluster.
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/truba_gromacs/index.html" class="no-external">
-<div class="listing-date">
-Jan 4, 2026
-</div>
-<div class="listing-author">
-Emre Taha Çevik
-</div>
-</a>
-</div>
-</div>
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div></main> <!-- /main -->
-<script id="quarto-html-after-body" type="application/javascript">
-  window.document.addEventListener("DOMContentLoaded", function (event) {
-    // Ensure there is a toggle, if there isn't float one in the top right
-    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
-      const a = window.document.createElement('a');
-      a.classList.add('top-right');
-      a.classList.add('quarto-color-scheme-toggle');
-      a.href = "";
-      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
-      const i = window.document.createElement("i");
-      i.classList.add('bi');
-      a.appendChild(i);
-      window.document.body.appendChild(a);
-    }
-    setColorSchemeToggle(hasAlternateSentinel())
-    const icon = "";
-    const anchorJS = new window.AnchorJS();
-    anchorJS.options = {
-      placement: 'right',
-      icon: icon
-    };
-    anchorJS.add('.anchored');
-    const isCodeAnnotation = (el) => {
-      for (const clz of el.classList) {
-        if (clz.startsWith('code-annotation-')) {                     
-          return true;
-        }
-      }
-      return false;
-    }
-    const onCopySuccess = function(e) {
-      // button target
-      const button = e.trigger;
-      // don't keep focus
-      button.blur();
-      // flash "checked"
-      button.classList.add('code-copy-button-checked');
-      var currentTitle = button.getAttribute("title");
-      button.setAttribute("title", "Copied!");
-      let tooltip;
-      if (window.bootstrap) {
-        button.setAttribute("data-bs-toggle", "tooltip");
-        button.setAttribute("data-bs-placement", "left");
-        button.setAttribute("data-bs-title", "Copied!");
-        tooltip = new bootstrap.Tooltip(button, 
-          { trigger: "manual", 
-            customClass: "code-copy-button-tooltip",
-            offset: [0, -8]});
-        tooltip.show();    
-      }
-      setTimeout(function() {
-        if (tooltip) {
-          tooltip.hide();
-          button.removeAttribute("data-bs-title");
-          button.removeAttribute("data-bs-toggle");
-          button.removeAttribute("data-bs-placement");
-        }
-        button.setAttribute("title", currentTitle);
-        button.classList.remove('code-copy-button-checked');
-      }, 1000);
-      // clear code selection
-      e.clearSelection();
-    }
-    const getTextToCopy = function(trigger) {
-      const outerScaffold = trigger.parentElement.cloneNode(true);
-      const codeEl = outerScaffold.querySelector('code');
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-      text: getTextToCopy
-    });
-    clipboard.on('success', onCopySuccess);
-    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-        text: getTextToCopy,
-        container: window.document.getElementById('quarto-embedded-source-code-modal')
-      });
-      clipboardModal.on('success', onCopySuccess);
-    }
-      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-      var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/bogrum\.xyz");
-      var isInternal = (href) => {
-          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
-      }
-      // Inspect non-navigation links and adorn them if external
-     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-      for (var i=0; i<links.length; i++) {
-        const link = links[i];
-        if (!isInternal(link.href)) {
-          // undo the damage that might have been done by quarto-nav.js in the case of
-          // links that we want to consider external
-          if (link.dataset.originalHref !== undefined) {
-            link.href = link.dataset.originalHref;
-          }
-        }
-      }
-    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-      const config = {
-        allowHTML: true,
-        maxWidth: 500,
-        delay: 100,
-        arrow: false,
-        appendTo: function(el) {
-            return el.parentElement;
-        },
-        interactive: true,
-        interactiveBorder: 10,
-        theme: 'quarto',
-        placement: 'bottom-start',
-      };
-      if (contentFn) {
-        config.content = contentFn;
-      }
-      if (onTriggerFn) {
-        config.onTrigger = onTriggerFn;
-      }
-      if (onUntriggerFn) {
-        config.onUntrigger = onUntriggerFn;
-      }
-      window.tippy(el, config); 
-    }
-    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-    for (var i=0; i<noterefs.length; i++) {
-      const ref = noterefs[i];
-      tippyHover(ref, function() {
-        // use id or data attribute instead here
-        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-        try { href = new URL(href).hash; } catch {}
-        const id = href.replace(/^#\/?/, "");
-        const note = window.document.getElementById(id);
-        if (note) {
-          return note.innerHTML;
-        } else {
-          return "";
-        }
-      });
-    }
-    const xrefs = window.document.querySelectorAll('a.quarto-xref');
-    const processXRef = (id, note) => {
-      // Strip column container classes
-      const stripColumnClz = (el) => {
-        el.classList.remove("page-full", "page-columns");
-        if (el.children) {
-          for (const child of el.children) {
-            stripColumnClz(child);
-          }
-        }
-      }
-      stripColumnClz(note)
-      if (id === null || id.startsWith('sec-')) {
-        // Special case sections, only their first couple elements
-        const container = document.createElement("div");
-        if (note.children && note.children.length > 2) {
-          container.appendChild(note.children[0].cloneNode(true));
-          for (let i = 1; i < note.children.length; i++) {
-            const child = note.children[i];
-            if (child.tagName === "P" && child.innerText === "") {
-              continue;
-            } else {
-              container.appendChild(child.cloneNode(true));
-              break;
-            }
-          }
-          if (window.Quarto?.typesetMath) {
-            window.Quarto.typesetMath(container);
-          }
-          return container.innerHTML
-        } else {
-          if (window.Quarto?.typesetMath) {
-            window.Quarto.typesetMath(note);
-          }
-          return note.innerHTML;
-        }
-      } else {
-        // Remove any anchor links if they are present
-        const anchorLink = note.querySelector('a.anchorjs-link');
-        if (anchorLink) {
-          anchorLink.remove();
-        }
-        if (window.Quarto?.typesetMath) {
-          window.Quarto.typesetMath(note);
-        }
-        if (note.classList.contains("callout")) {
-          return note.outerHTML;
-        } else {
-          return note.innerHTML;
-        }
-      }
-    }
-    for (var i=0; i<xrefs.length; i++) {
-      const xref = xrefs[i];
-      tippyHover(xref, undefined, function(instance) {
-        instance.disable();
-        let url = xref.getAttribute('href');
-        let hash = undefined; 
-        if (url.startsWith('#')) {
-          hash = url;
-        } else {
-          try { hash = new URL(url).hash; } catch {}
-        }
-        if (hash) {
-          const id = hash.replace(/^#\/?/, "");
-          const note = window.document.getElementById(id);
-          if (note !== null) {
-            try {
-              const html = processXRef(id, note.cloneNode(true));
-              instance.setContent(html);
-            } finally {
-              instance.enable();
-              instance.show();
-            }
-          } else {
-            // See if we can fetch this
-            fetch(url.split('#')[0])
-            .then(res => res.text())
-            .then(html => {
-              const parser = new DOMParser();
-              const htmlDoc = parser.parseFromString(html, "text/html");
-              const note = htmlDoc.getElementById(id);
-              if (note !== null) {
-                const html = processXRef(id, note);
-                instance.setContent(html);
-              } 
-            }).finally(() => {
-              instance.enable();
-              instance.show();
-            });
-          }
-        } else {
-          // See if we can fetch a full url (with no hash to target)
-          // This is a special case and we should probably do some content thinning / targeting
-          fetch(url)
-          .then(res => res.text())
-          .then(html => {
-            const parser = new DOMParser();
-            const htmlDoc = parser.parseFromString(html, "text/html");
-            const note = htmlDoc.querySelector('main.content');
-            if (note !== null) {
-              // This should only happen for chapter cross references
-              // (since there is no id in the URL)
-              // remove the first header
-              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
-                note.children[0].remove();
-              }
-              const html = processXRef(null, note);
-              instance.setContent(html);
-            } 
-          }).finally(() => {
-            instance.enable();
-            instance.show();
-          });
-        }
-      }, function(instance) {
-      });
-    }
-        let selectedAnnoteEl;
-        const selectorForAnnotation = ( cell, annotation) => {
-          let cellAttr = 'data-code-cell="' + cell + '"';
-          let lineAttr = 'data-code-annotation="' +  annotation + '"';
-          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
-          return selector;
-        }
-        const selectCodeLines = (annoteEl) => {
-          const doc = window.document;
-          const targetCell = annoteEl.getAttribute("data-target-cell");
-          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
-          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
-          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
-          const lineIds = lines.map((line) => {
-            return targetCell + "-" + line;
-          })
-          let top = null;
-          let height = null;
-          let parent = null;
-          if (lineIds.length > 0) {
-              //compute the position of the single el (top and bottom and make a div)
-              const el = window.document.getElementById(lineIds[0]);
-              top = el.offsetTop;
-              height = el.offsetHeight;
-              parent = el.parentElement.parentElement;
-            if (lineIds.length > 1) {
-              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-              height = bottom - top;
-            }
-            if (top !== null && height !== null && parent !== null) {
-              // cook up a div (if necessary) and position it 
-              let div = window.document.getElementById("code-annotation-line-highlight");
-              if (div === null) {
-                div = window.document.createElement("div");
-                div.setAttribute("id", "code-annotation-line-highlight");
-                div.style.position = 'absolute';
-                parent.appendChild(div);
-              }
-              div.style.top = top - 2 + "px";
-              div.style.height = height + 4 + "px";
-              div.style.left = 0;
-              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-              if (gutterDiv === null) {
-                gutterDiv = window.document.createElement("div");
-                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-                gutterDiv.style.position = 'absolute';
-                const codeCell = window.document.getElementById(targetCell);
-                const gutter = codeCell.querySelector('.code-annotation-gutter');
-                gutter.appendChild(gutterDiv);
-              }
-              gutterDiv.style.top = top - 2 + "px";
-              gutterDiv.style.height = height + 4 + "px";
-            }
-            selectedAnnoteEl = annoteEl;
-          }
-        };
-        const unselectCodeLines = () => {
-          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
-          elementsIds.forEach((elId) => {
-            const div = window.document.getElementById(elId);
-            if (div) {
-              div.remove();
-            }
-          });
-          selectedAnnoteEl = undefined;
-        };
-          // Handle positioning of the toggle
-      window.addEventListener(
-        "resize",
-        throttle(() => {
-          elRect = undefined;
-          if (selectedAnnoteEl) {
-            selectCodeLines(selectedAnnoteEl);
-          }
-        }, 10)
-      );
-      function throttle(fn, ms) {
-      let throttle = false;
-      let timer;
-        return (...args) => {
-          if(!throttle) { // first call gets through
-              fn.apply(this, args);
-              throttle = true;
-          } else { // all the others get throttled
-              if(timer) clearTimeout(timer); // cancel #2
-              timer = setTimeout(() => {
-                fn.apply(this, args);
-                timer = throttle = false;
-              }, ms);
-          }
-        };
-      }
-        // Attach click handler to the DT
-        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-        for (const annoteDlNode of annoteDls) {
-          annoteDlNode.addEventListener('click', (event) => {
-            const clickedEl = event.target;
-            if (clickedEl !== selectedAnnoteEl) {
-              unselectCodeLines();
-              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-              if (activeEl) {
-                activeEl.classList.remove('code-annotation-active');
-              }
-              selectCodeLines(clickedEl);
-              clickedEl.classList.add('code-annotation-active');
-            } else {
-              // Unselect the line
-              unselectCodeLines();
-              clickedEl.classList.remove('code-annotation-active');
-            }
-          });
-        }
-    const findCites = (el) => {
-      const parentEl = el.parentElement;
-      if (parentEl) {
-        const cites = parentEl.dataset.cites;
-        if (cites) {
-          return {
-            el,
-            cites: cites.split(' ')
-          };
-        } else {
-          return findCites(el.parentElement)
-        }
-      } else {
-        return undefined;
-      }
-    };
-    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-    for (var i=0; i<bibliorefs.length; i++) {
-      const ref = bibliorefs[i];
-      const citeInfo = findCites(ref);
-      if (citeInfo) {
-        tippyHover(citeInfo.el, function() {
-          var popup = window.document.createElement('div');
-          citeInfo.cites.forEach(function(cite) {
-            var citeDiv = window.document.createElement('div');
-            citeDiv.classList.add('hanging-indent');
-            citeDiv.classList.add('csl-entry');
-            var biblioDiv = window.document.getElementById('ref-' + cite);
-            if (biblioDiv) {
-              citeDiv.innerHTML = biblioDiv.innerHTML;
-            }
-            popup.appendChild(citeDiv);
-          });
-          return popup.innerHTML;
-        });
-      }
-    }
-  });
-  </script>
-</div> <!-- /content -->
-
-
-
-
-</body></html>
+</body>
+</html>
