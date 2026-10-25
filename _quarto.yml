@@ -1,13 +1,20 @@
 project:
   type: website
+  resources:
+    - index.html
+    - about.html
+    - cv.pdf
 
 website:
   description: "Molecular modeling, GROMACS, and Python tutorials."
   site-url: https://emretahacevik.com # you must change this appropriately for RSS feeds to work properly
-  title: "i-dev-biodynamics"
+  title: "Emre Taha Çevik"
   navbar:
     right:
-      - about.qmd
+      - href: index.html
+        text: Home
+      - href: blog.qmd
+        text: Blog
       - icon: github
         href: https://github.com/bogrum
       - icon: bsky
